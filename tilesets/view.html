@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>USGS & Entwine</title>
+  <script src="./Cesium/Cesium.js"></script>
+  <style>
+      @import url(./Cesium/Widgets/widgets.css);
+      #cesiumContainer {
+          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      }
+  </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <div id="entwine-logo">
+      <a href="/">
+          <img id="entwine-image" src="/images/entwine-logo.png"/>
+      </a>
+  </div>
+
+  <script>
+    var getQueryParam = function(name) {
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(window.location.href);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    };
+
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDU0ZmY5MC05NGQ2LTQ2MzItYTU2ZC1kOTA2MmI0MzlmODciLCJpZCI6NDU1MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MTA5NTY0Mn0.HYTFh-384LduDB2N4c3kOTR5W_7HAy8eKbNJYPVHwLw';
+
+    var style = document.createElement('style');
+    style.innerHTML = "body, html { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } #top { display: none; }"
+    document.body.appendChild(style);
+
+    var imageryProviders = Cesium.createDefaultImageryProviderViewModels();
+    var terrainProviders = Cesium.createDefaultTerrainProviderViewModels();
+
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        imageryProviderViewModels: imageryProviders,
+        selectedImageryProviderViewModel: imageryProviders[6],
+        terrainProviderViewModels: terrainProviders,
+        selectedTerrainProviderViewModel: terrainProviders[1]
+    });
+
+    var cf = getQueryParam('resource') || getQueryParam('r')
+    var ec = getQueryParam('instance') || getQueryParam('i')
+    if (!cf && !ec) throw new Error('No resource specified')
+    var url = cf
+        ? 'https://lambda.entwine.io/' + cf + '/ept-tileset/tileset.json'
+        : 'https://usgs-tiles.entwine.io/' + ec + '/ept-tileset/tileset.json'
+
+    window.tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+        url: url
+    }));
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+        pointSize: getQueryParam('pointSize') || 3
+    });
+
+    tileset.readyPromise.then(function() {
+        tileset.pointCloudShading.attenuation = true
+
+        console.log('Loaded tileset');
+        var bounding = tileset._root._boundingVolume;
+        var center = bounding.boundingSphere.center;
+        var cart = Cesium.Ellipsoid.WGS84.cartesianToCartographic(center);
+
+        var dest = Cesium.Cartesian3.fromDegrees(
+                cart.longitude * (180 / Math.PI),
+                cart.latitude * (180 / Math.PI),
+                bounding._boundingSphere.radius * 1.0);
+
+        viewer.camera.setView({ destination: dest });
+    })
+    .otherwise(function(error){
+        console.log(error)
+    });
+  </script>
+</body>
+
+<style>
+body {
+    background: #eee;
+}
+
+.table {
+    border-radius: 5px;
+    width: 50%;
+    margin: 0px auto;
+    float: none;
+}
+
+#entwine-banner, #cesium-banner, #tiles-banner {
+    width: 100%;
+}
+
+#resources {
+    margin-top: 64px;
+}
+
+#more, #about {
+    margin-top: 32px;
+}
+
+#top {
+    display: none;
+    margin: 10px 10px 10px 10px;
+}
+
+#entwine-logo {
+    position: absolute;
+    bottom: 56px;
+    left: 176px;
+}
+
+#entwine-image {
+    width: 128px;
+}
+
+.cesium-credit-text, .cesium-credit-delimiter {
+    display: none;
+}
+</style>
+</html>
+

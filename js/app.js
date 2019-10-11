@@ -86,6 +86,7 @@ var commify = (n) => {
 };
 
 var potreeLinkify = (name) => '/data/view.html?r=' + root + name + postfix;
+var cesiumLinkify = (name) => '/tilesets/view.html?i=' + name;
 
 var plasioLinkify = (name) => 'http://dev.speck.ly/?s=0&r=ept://' +
     rawRoot + name + '&c0s=remote%3A%2F%2Fimagery%3Furl%3Dhttp%253A%252F%252Fserver.arcgisonline.com%252FArcGIS%252Frest%252Fservices%252FWorld_Imagery%252FMapServer%252Ftile%252F%257B%257Bz%257D%257D%252F%257B%257By%257D%257D%252F%257B%257Bx%257D%257D.jpg';
@@ -97,10 +98,9 @@ var Resource = React.createClass({
         var points = entry.points;
 
         var potree = potreeLinkify(name);
-        // '/data/view.html?r=' + root + name + postfix;
         var plasio = plasioLinkify(name);
-            // 'http://dev.speck.ly/?s=0&r=ept://' + rawRoot + name +
-            // '&c0s=remote%3A%2F%2Fimagery%3Furl%3Dhttp%253A%252F%252Fserver.arcgisonline.com%252FArcGIS%252Frest%252Fservices%252FWorld_Imagery%252FMapServer%252Ftile%252F%257B%257Bz%257D%257D%252F%257B%257By%257D%257D%252F%257B%257Bx%257D%257D.jpg';
+        var cesium = cesiumLinkify(name);
+
         var link = <i className='fa fa-circle'></i>;
 
         return <tr>
@@ -114,6 +114,7 @@ var Resource = React.createClass({
             </td>
             <td className='text-center'><a href={ potree }>{ link }</a></td>
             <td className='text-center'><a href={ plasio }>{ link }</a></td>
+            <td className='text-center'><a href={ cesium }>{ link }</a></td>
         </tr>;
     }
 });
@@ -227,6 +228,7 @@ var Resources = React.createClass({
                         </th>
                         <th className='text-center'>Potree</th>
                         <th className='text-center'>Plasio</th>
+                        <th className='text-center'>Cesium</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -331,7 +333,8 @@ var Resources = React.createClass({
                 '<strong>' + name + '</strong>' +
                 '<br>' +
                 '(<a href="' + potreeLinkify(name) + '">Potree</a>) ' +
-                '(<a href="' + plasioLinkify(name) + '">Plasio</a>)' +
+                '(<a href="' + plasioLinkify(name) + '">Plasio</a>) ' +
+                '(<a href="' + cesiumLinkify(name) + '">Cesium</a>)' +
             '</div>', { });
 
             p[name] = { visible: true, polygon: polygon };
