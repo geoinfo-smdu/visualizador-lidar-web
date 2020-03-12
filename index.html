@@ -79,28 +79,29 @@
 		//xmax=328283.0&ymax=7395510.0&xmin=327741.0&ymin=7394923.0
 
 		if (metadata) {
-			minx = metadata.bb.minx || xmin || 327741.0;
-			miny = metadata.bb.miny || ymin || 7390886.0;
-			minz = 715.00 || metadata.bb.minz;
+			minx = metadata.bb.minx || xmin || 313140.0;
+			miny = metadata.bb.miny || ymin || 7343492.0;
+			minz = 0.00 || metadata.bb.minz;
 
-			maxx = metadata.bb.maxx || xmax || 334179.0;
-			maxy = metadata.bb.maxy || ymax || 7395579.0;
-			maxz = 1042.00 || metadata.bb.maxz;
+			maxx = metadata.bb.maxx || xmax || 360867.0;
+			maxy = metadata.bb.maxy || ymax || 7416407.0;
+			maxz = 1495.00 || metadata.bb.maxz;
 		} else {
-			minx = xmin || 327741.0;
-			miny = ymin || 7390886.0;
-			minz = 715.00;
+			minx = xmin || 313140.0;
+			miny = ymin || 7343492.0;
+			minz = 0.00;
 
-			maxx = xmax || 334179.0;
-			maxy = ymax || 7395579.0;
-			maxz = 1042.00;
+			maxx = xmax || 360867.0;
+			maxy = ymax || 7416407.0;
+			maxz = 1495.00;
 		}
 
 		centerx = minx + ((maxx - minx)/2);
 		centery = miny + ((maxy - miny)/2);
 		centerz = minz + ((maxz - minz)/2);
 
-		//console.log(metadata.bb);
+		console.log("metadata.xmin");
+		console.log(xmin);
 
 		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
 
