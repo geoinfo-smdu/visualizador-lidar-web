@@ -57,8 +57,8 @@
 		let xmin = parseFloat(urlParams.get('xmin'));
 		let ymin = parseFloat(urlParams.get('ymin'));
 
-		console.log(scm);
-		console.log(xmax, ymax, xmin, ymin);
+		//console.log(scm);
+		//console.log(xmax, ymax, xmin, ymin);
 		//metadata_json = $.getJSON('metadata/bb_min_max.json', function(data) {
 		//	console.log(data);
 		//	return data;
@@ -74,7 +74,7 @@
 		});
 
 		metadata = metadata_json.responseJSON.find(obj => obj.scm==scm);
-		console.log(metadata);
+		//console.log(metadata);
 
 		//xmax=328283.0&ymax=7395510.0&xmin=327741.0&ymin=7394923.0
 
