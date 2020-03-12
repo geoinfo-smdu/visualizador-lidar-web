@@ -1,29 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>USGS & Entwine</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="author" content="Secretaria Municipal de Desenvolvimento Urbano (SMDU) - Prefeitura do Município de São Paulo">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>M3DC - Visualizador LiDAR (Nuvem de Pontos) Web do Município de São Paulo </title>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="build/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="libs/perfect-scrollbar/css/perfect-scrollbar.css">
+	<link rel="stylesheet" type="text/css" href="libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="libs/jstree/themes/mixed/style.css">
+	<link rel="stylesheet" href="../css/entwine.css" type="text/css">
+</head>
 
-    <link rel="stylesheet" type="text/css" href="css/style.css"></link>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css"></link>
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" crossorigin=""></link>
-  </head>
+<body>
+	<script src="libs/jquery/jquery-3.1.1.min.js"></script>
+	<script src="libs/spectrum/spectrum.js"></script>
+	<script src="libs/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+	<script src="libs/jquery-ui/jquery-ui.min.js"></script>
+	<script src="libs/three.js/build/three.min.js"></script>
+	<script src="libs/other/BinaryHeap.js"></script>
+	<script src="libs/tween/tween.min.js"></script>
+	<script src="libs/d3/d3.js"></script>
+	<script src="libs/proj4/proj4.js"></script>
+	<script src="libs/openlayers3/ol.js"></script>
+	<script src="libs/i18next/i18next.js"></script>
+	<script src="libs/jstree/jstree.js"></script>
+	<script src="build/potree/potree.js"></script>
+	<script src="libs/plasio/js/laslaz.js"></script>
+	<script src="libs/clipboard.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        window.config = { };
+    </script>
 
-  <body>
-    <div id="app"/>
+	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
+	<!-- INCLUDE SETTINGS HERE -->
 
-    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" crossorigin=""></script>
-    <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
-    <script type="text/babel" src="js/app.js"></script>
+	<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; ">
+		<div id="potree_render_area">		</div>
+		<div id="potree_sidebar_container"> </div>
+	</div>
+
+        <a href="http://geosampa.prefeitura.sp.gov.br/" target="_self" id="geosampa_logo_container">
+            <img id="geosampa_logo" src="/resources/images/geosampa-logo.png"/>
+		</a>
+
+	<script>
+
+		let urlParams = new URLSearchParams(window.location.search);
+		let scm = urlParams.get('scm');
+		let xmax = parseFloat(urlParams.get('xmax'));
+		let ymax = parseFloat(urlParams.get('ymax'));
+		let xmin = parseFloat(urlParams.get('xmin'));
+		let ymin = parseFloat(urlParams.get('ymin'));
+
+		console.log(scm);
+		console.log(xmax, ymax, xmin, ymin);
+		//metadata_json = $.getJSON('metadata/bb_min_max.json', function(data) {
+		//	console.log(data);
+		//	return data;
+		//});
+
+		metadata_json = $.ajax({ 
+    		url: 'metadata/bb_min_max.json', 
+    		dataType: 'json', 
+    		data: function(data) {
+				return data;
+			}, 
+    		async: false
+		});
+
+		metadata = metadata_json.responseJSON.find(obj => obj.scm==scm);
+		console.log(metadata);
+
+		//xmax=328283.0&ymax=7395510.0&xmin=327741.0&ymin=7394923.0
+
+		if (metadata) {
+			minx = metadata.bb.minx || xmin || 327741.0;
+			miny = metadata.bb.miny || ymin || 7390886.0;
+			minz = 715.00 || metadata.bb.minz;
+
+			maxx = metadata.bb.maxx || xmax || 334179.0;
+			maxy = metadata.bb.maxy || ymax || 7395579.0;
+			maxz = 1042.00 || metadata.bb.maxz;
+		} else {
+			minx = xmin || 327741.0;
+			miny = ymin || 7390886.0;
+			minz = 715.00;
+
+			maxx = xmax || 334179.0;
+			maxy = ymax || 7395579.0;
+			maxz = 1042.00;
+		}
+
+		centerx = minx + ((maxx - minx)/2);
+		centery = miny + ((maxy - miny)/2);
+		centerz = minz + ((maxz - minz)/2);
+
+		//console.log(metadata.bb);
+
+		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+
+		viewer.setClassificationVisibility(19, true)
+		viewer.setClassificationVisibility(20, true)
+		viewer.classifications[19].name = 'Other Features (19)'
+		viewer.classifications[20].name = 'Other Features (20)'
+
+		viewer.setEDLEnabled(true);
+		viewer.setFOV(60);
+		viewer.setPointBudget(2*1000*1000);
+		viewer.loadSettingsFromURL();
+
+		viewer.setDescription("Loading Entwine-generated EPT format");
+
+		viewer.loadGUI(() => {
+			viewer.setLanguage('en');
+			$("#menu_appearance").next().show();
+			$("#menu_tools").next().show();
+			$("#menu_scene").next().show();
+			viewer.toggleSidebar();
+		});
+
+        var path = "https://entwine3314.s3.amazonaws.com/entwine/ept.json";
+		//var path = "http://localhost:8080/ept.json";
+		var name = "entwine3314";
+
+		Potree.loadPointCloud(path, name, function(e){
+			let scene = viewer.scene;
+			scene.addPointCloud(e.pointcloud);
+
+			let material = e.pointcloud.material;
+			material.size = 0.30;
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+
+			{
+			 // VOLUME invisible
+				let volume  = new Potree.BoxVolume();
+				volume.name = "Invisible";
+				volume.scale.set(maxx - minx, maxy - miny, maxz - minz);
+				volume.position.set(centerx, centery, centerz);
+				volume.clip = true;
+				volume.visible = false;
+
+				scene.addVolume(volume);
+			}
+
+			viewer.setClipTask(Potree.ClipTask.SHOW_INSIDE)
+
+			box = viewer.getBoundingBox(viewer.scene.pointclouds)
+
+			node = new THREE.Object3D();
+			node.boundingBox = box;
+
+			// A partir dos valores máximos do bounding box
+			viewer.scene.view.position.set(maxx + (maxx-minx), maxy + (maxy-miny), maxz + ((maxx-minx) + (maxy-miny))/Math.sqrt(2));
+			
+			// deixar na centroid do BOX
+			viewer.scene.view.lookAt(new THREE.Vector3(centerx, centery, centerz));
+
+		});
+
+		
+	</script>
+
   </body>
 </html>
 
