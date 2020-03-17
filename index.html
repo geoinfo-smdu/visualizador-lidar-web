@@ -56,6 +56,7 @@
 		let ymax = parseFloat(urlParams.get('ymax'));
 		let xmin = parseFloat(urlParams.get('xmin'));
 		let ymin = parseFloat(urlParams.get('ymin'));
+		mdt = parseFloat(urlParams.get('mdt'));
 
 		//console.log(scm);
 		//console.log(xmax, ymax, xmin, ymin);
@@ -81,15 +82,15 @@
 		if (metadata) {
 			minx = metadata.bb.minx || xmin || 313140.0;
 			miny = metadata.bb.miny || ymin || 7343492.0;
-			minz = 0.00 || metadata.bb.minz;
+			minz = metadata.bb.minz || 650.00;
 
 			maxx = metadata.bb.maxx || xmax || 360867.0;
 			maxy = metadata.bb.maxy || ymax || 7416407.0;
-			maxz = 1495.00 || metadata.bb.maxz;
+			maxz = metadata.bb.maxz || 1495.00;
 		} else {
 			minx = xmin || 313140.0;
 			miny = ymin || 7343492.0;
-			minz = 0.00;
+			minz = 650.00;
 
 			maxx = xmax || 360867.0;
 			maxy = ymax || 7416407.0;
@@ -100,15 +101,20 @@
 		centery = miny + ((maxy - miny)/2);
 		centerz = minz + ((maxz - minz)/2);
 
-		console.log("metadata.xmin");
-		console.log(xmin);
-
 		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
 
-		viewer.setClassificationVisibility(19, true)
-		viewer.setClassificationVisibility(20, true)
-		viewer.classifications[19].name = 'Other Features (19)'
-		viewer.classifications[20].name = 'Other Features (20)'
+		viewer.setClassificationVisibility(19, true);
+		viewer.setClassificationVisibility(20, true);
+		viewer.classifications[19].name = 'Other Features (19)';
+		viewer.classifications[20].name = 'Other Features (20)';	
+
+		//if (mdt) {
+			for (var [key, value] of Object.entries(viewer.classifications)) {
+    			viewer.setClassificationVisibility(key, false)
+			}	
+			viewer.setClassificationVisibility(2, true);
+		//}
+		
 
 		viewer.setEDLEnabled(true);
 		viewer.setFOV(60);
@@ -134,6 +140,11 @@
 			scene.addPointCloud(e.pointcloud);
 
 			let material = e.pointcloud.material;
+			if (mdt) {
+				material.pointColorType = Potree.PointColorType.ELEVATION;
+				console.log("PAssou");
+				material.elevationRange = [minz, maxz];
+			}
 			material.size = 0.30;
 			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
 
