@@ -22890,7 +22890,7 @@ ENDSEC
 				["FR", "fr"],
 				["DE", "de"],
 				["JP", "jp"],
-				["PT-BR", "pt-BR"]
+				["PT", "pt"]
 			];
 
 			let elLanguages = $('#potree_languages');
