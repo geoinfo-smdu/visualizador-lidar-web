@@ -22886,11 +22886,11 @@ ENDSEC
 			});
 
 			let languages = [
-				["EN", "en"],
+				["PT", "en"],
+				["EN", "pt"],
 				["FR", "fr"],
 				["DE", "de"],
-				["JP", "jp"],
-				["PT", "pt"]
+				["JP", "jp"]
 			];
 
 			let elLanguages = $('#potree_languages');
