@@ -163,7 +163,7 @@
 			viewer.setClipTask(Potree.ClipTask.SHOW_INSIDE);
 
 			// Ajustando a projeção
-			viewer.mapView.setSceneProjection(e.pointcloud.projection);
+			// viewer.mapView.setSceneProjection(e.pointcloud.projection);
 
 			box = viewer.getBoundingBox(viewer.scene.pointclouds);
 
@@ -181,15 +181,13 @@
 			//viewer.setLanguage("pt");	
 			//viewer.setLanguage("pt");
 
-			viewer.scene.pointclouds[0].projection = projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs";
-
-			viewer.mapView.setSceneProjection(viewer.scene.pointclouds[0].projection);
-
-			viewer.mapView.load(viewer.scene.pointclouds[0]);
-
 		});
 
+		viewer.scene.pointclouds[0].projection = projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs";
 
+		viewer.mapView.setSceneProjection(viewer.scene.pointclouds[0].projection);
+
+		viewer.mapView.load(viewer.scene.pointclouds[0]);
 
 		
 	</script>
