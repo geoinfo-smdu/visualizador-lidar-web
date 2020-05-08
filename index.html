@@ -138,6 +138,8 @@
 		Potree.loadPointCloud(path, name, function(e){
 			let scene = viewer.scene;
 			scene.addPointCloud(e.pointcloud);
+			e.pointcloud.projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs"
+
 
 			let material = e.pointcloud.material;
 			if (mdt) {
@@ -159,9 +161,12 @@
 				scene.addVolume(volume);
 			}
 
-			viewer.setClipTask(Potree.ClipTask.SHOW_INSIDE)
+			viewer.setClipTask(Potree.ClipTask.SHOW_INSIDE);
 
-			box = viewer.getBoundingBox(viewer.scene.pointclouds)
+			// Ajustando a projeção
+			viewer.mapView.setSceneProjection(e.pointcloud.projection);
+
+			box = viewer.getBoundingBox(viewer.scene.pointclouds);
 
 			node = new THREE.Object3D();
 			node.boundingBox = box;
@@ -177,7 +182,12 @@
 			//viewer.setLanguage("pt");	
 			//viewer.setLanguage("pt");
 
+			viewer.mapView.setSceneProjection(viewer.scene.pointclouds[0].projection);
+
+			viewer.mapView.load(viewer.scene.pointclouds[0]);
+
 		});
+
 
 
 		
