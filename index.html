@@ -139,7 +139,8 @@
 			alert('seila');
 			let scene = viewer.scene;
 			e.pointcloud.projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs"
-			viewer.mapView.load(viewer.scene.pointclouds[0]);
+			viewer.mapView.setSceneProjection(e.pointcloud.projection);
+			viewer.mapView.load(e.pointcloud);
 			scene.addPointCloud(e.pointcloud);
 			
 			let material = e.pointcloud.material;
