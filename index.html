@@ -136,8 +136,10 @@
 		var name = "entwine3314";
 
 		Potree.loadPointCloud(path, name, function(e){
+			alert('seila');
 			let scene = viewer.scene;
 			e.pointcloud.projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs"
+			viewer.mapView.load(viewer.scene.pointclouds[0]);
 			scene.addPointCloud(e.pointcloud);
 			
 			let material = e.pointcloud.material;
@@ -173,6 +175,8 @@
 			// A partir dos valores máximos do bounding box
 			viewer.scene.view.position.set(maxx + (maxx-minx)/3, miny - (maxy-miny)/3, maxz + ((maxx-minx) + (maxy-miny))/2);
 			
+			alert('seila');
+
 			// deixar na centroid do BOX
 			viewer.scene.view.lookAt(new THREE.Vector3(centerx, centery, centerz));
 
@@ -183,11 +187,6 @@
 
 		});
 
-		viewer.scene.pointclouds[0].projection = projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs";
-
-		viewer.mapView.setSceneProjection(viewer.scene.pointclouds[0].projection);
-
-		viewer.mapView.load(viewer.scene.pointclouds[0]);
 
 		
 	</script>
