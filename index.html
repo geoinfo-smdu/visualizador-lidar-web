@@ -137,10 +137,9 @@
 
 		Potree.loadPointCloud(path, name, function(e){
 			let scene = viewer.scene;
-			scene.addPointCloud(e.pointcloud);
 			e.pointcloud.projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs"
-
-
+			scene.addPointCloud(e.pointcloud);
+			
 			let material = e.pointcloud.material;
 			if (mdt) {
 				material.pointColorType = Potree.PointColorType.ELEVATION;
@@ -181,6 +180,8 @@
 			
 			//viewer.setLanguage("pt");	
 			//viewer.setLanguage("pt");
+
+			viewer.scene.pointclouds[0].projection = projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs";
 
 			viewer.mapView.setSceneProjection(viewer.scene.pointclouds[0].projection);
 
