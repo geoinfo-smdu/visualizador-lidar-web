@@ -139,8 +139,8 @@
 			// console.log('1')
 			let scene = viewer.scene;
 			e.pointcloud.projection = "+proj=utm +zone=23 +south +units=m +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +nodefs"
-			// viewer.mapView.setSceneProjection(e.pointcloud.projection);
-			// viewer.mapView.load(e.pointcloud);
+			viewer.mapView.setSceneProjection(e.pointcloud.projection);
+			viewer.mapView.load(e.pointcloud);
 			scene.addPointCloud(e.pointcloud);
 			
 			let material = e.pointcloud.material;
@@ -179,22 +179,6 @@
 			// deixar na centroid do BOX
 			viewer.scene.view.lookAt(new THREE.Vector3(centerx, centery, centerz));
 
-
-			let pointcloudProjection = e.pointcloud.projection;
-			let mapProjection = proj4.defs("WGS84");
-
-			window.toMap = proj4(pointcloudProjection, mapProjection);
-			window.toScene = proj4(mapProjection, pointcloudProjection);
-		
-			{
-				let bb = potreeViewer.getBoundingBox();
-
-				let minWGS84 = proj4(pointcloudProjection, mapProjection, bb.min.toArray());
-				let maxWGS84 = proj4(pointcloudProjection, mapProjection, bb.max.toArray());
-			}
-
-			viewer.mapView.setSceneProjection(e.pointcloud.projection);
-			viewer.mapView.load(e.pointcloud);
 			// Tornando a linguagem padrão em Português
 			
 			//viewer.setLanguage("pt");	
